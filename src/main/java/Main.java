@@ -66,15 +66,16 @@ public class Main {
                      String execPath = getPath(command);
                     if(execPath != null){
                         try {
-                            List<String> commandList = new ArrayList<>();
-                                commandList.add(execPath);
+                                String[] fullcommand = new String[parts.length];
+                                fullcommand[0] = execPath;
+                                
                                 for (int i = 1; i < parts.length; i++) {
-                                    commandList.add(parts[i]);
+                                    fullcommand[i] = parts[i];
                                 }
 
-                                ProcessBuilder pb = new ProcessBuilder(commandList);
-                                pb.inheritIO();
-                                Process process = pb.start();
+                                
+                                Process process = Runtime.getRuntime().exec(fullcommand);
+                                process.getInputStream().transferTo(System.out);
                                 process.waitFor();
 
                         } catch (IOException | InterruptedException e) {
