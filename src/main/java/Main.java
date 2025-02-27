@@ -3,6 +3,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 import java.nio.file.Path;
+import java.io.IOException;
 import java.nio.file.Files;
 
 public class Main {
@@ -62,16 +63,29 @@ public class Main {
                     break;
 
                 default:
+                     String execPath = getPath(command);
+                    if(execPath != null){
+                        try {
+                            List<String> commandList = new ArrayList<>();
+                                commandList.add(execPath);
+                                for (int i = 1; i < parts.length; i++) {
+                                    commandList.add(parts[i]);
+                                }
 
-                    String spath = getPath(command);
-                    if (spath == null) {
-                        System.out.println(input + ": command not found");
-                        break;
-                    } else {
-                        String fullpath = spath + parameter;
-                        Process p = Runtime.getRuntime().exec(fullpath.split(" "));
-                        p.getInputStream().transferTo(System.out);
+                                ProcessBuilder pb = new ProcessBuilder(commandList);
+                                pb.inheritIO();
+                                Process process = pb.start();
+                                process.waitFor();
+
+                        } catch (IOException | InterruptedException e) {
+                            System.out.println(command + ": execution failed: " +e.getMessage() );
+                        }
                     }
+                    else{
+                        System.out.println(input + ": command not found");
+                   }
+                   break;
+
             }
 
         }
@@ -86,7 +100,7 @@ public class Main {
 
         for (String dir : pathEnv.split(":")) {
             Path fullpath = Path.of(dir, parameter);
-            if (Files.isRegularFile(fullpath)) {
+            if (Files.isRegularFile(fullpath) && Files.isExecutable(fullpath)) {
                 return fullpath.toString();
             }
         }
