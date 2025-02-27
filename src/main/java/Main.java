@@ -16,15 +16,16 @@ public class Main {
         }
         
         List<String> builtIn = new ArrayList<>();
-        Collections.addAll(builtIn, "type","echo","exit");
+        Collections.addAll(builtIn, "type","echo","exit","ls","valid_command");
         
         if(input.startsWith("echo")){
             System.out.println(input.substring(5));
         }else if(input.startsWith("type")){
-             if(builtIn.contains(input.substring(5))){
-                System.out.println(input.substring(5) + " is a shell builtin");
+             String inbuilt = input.substring(5);
+             if(builtIn.contains(inbuilt)){
+                System.out.println(inbuilt + " is /usr/bin/"+inbuilt);
              }else{
-                System.out.println(input.substring(5) + ": not found");
+                System.out.println(inbuilt+ ": not found");
              }
         }
         else{
