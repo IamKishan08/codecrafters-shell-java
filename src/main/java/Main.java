@@ -26,8 +26,6 @@ public class Main {
             String command = parts[0];
             String parameter = parts.length > 1 ? parts[1] : "";
 
-           
-
             switch (command) {
                 case "exit":
                     if (parameter.equals("0")) {
@@ -64,8 +62,16 @@ public class Main {
                     break;
 
                 default:
-                    System.out.println(input + ": command not found");
-                    break;
+
+                    String spath = getPath(command);
+                    if (spath == null) {
+                        System.out.println(input + ": command not found");
+                        break;
+                    } else {
+                        String fullpath = spath + parameter;
+                        Process p = Runtime.getRuntime().exec(fullpath.split(" "));
+                        p.getInputStream().transferTo(System.out);
+                    }
             }
 
         }
