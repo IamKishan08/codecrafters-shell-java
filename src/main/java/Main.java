@@ -66,13 +66,7 @@ public class Main {
                      String execPath = getPath(command);
                     if(execPath != null){
                         try {
-                                String[] fullcommand = new String[parts.length];
-                                fullcommand[0] = execPath;
-                                
-                                for (int i = 1; i < parts.length; i++) {
-                                    fullcommand[i] = parts[i];
-                                }
-
+                                String[] fullcommand = new String[] {command, parameter};
                                 
                                 Process process = Runtime.getRuntime().exec(fullcommand);
                                 process.getInputStream().transferTo(System.out);
