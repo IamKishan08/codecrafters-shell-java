@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -11,12 +14,20 @@ public class Main {
             scanner.close();
             break;
         }
-        input.trim();
-        String ec = input.substring(0,4);
         
-        if(ec.equals("echo")){
+        List<String> builtIn = new ArrayList<>();
+        Collections.addAll(builtIn, "type","echo","exit");
+        
+        if(input.startsWith("echo")){
             System.out.println(input.substring(5));
-        }else{
+        }else if(input.startsWith("type")){
+             if(builtIn.contains(input.substring(5))){
+                System.out.println(input.substring(5) + " is a shell builtin");
+             }else{
+                System.out.println(input.substring(5) + ": not found");
+             }
+        }
+        else{
            System.out.println(input + ": command not found");
         }
        }
