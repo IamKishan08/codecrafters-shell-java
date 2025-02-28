@@ -28,7 +28,7 @@ public class Main {
             if (parts.isEmpty())
                 continue;
 
-            // String[] parts = input.split("\s+", 2);
+           
             String command = parts.get(0);
             List<String> parameter = parts.subList(1, parts.size());
 
