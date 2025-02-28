@@ -51,6 +51,10 @@ public class Main {
                     System.out.println(dir);
                     break;    
                 case "cd":
+
+                    if(parameter.equals("~")){
+                        parameter = parameter.replace("~",System.getenv("HOME"));
+                    }
                     Path newPath = Paths.get(dir).resolve(parameter).normalize();
 
                     if(Files.isDirectory(newPath )){
