@@ -99,7 +99,8 @@ public class Main {
                     }
                      
                     for(String fileName : parameter){
-                          Path filePath = Paths.get(dir).resolve(fileName.replace("\\","\\\\"));
+                          fileName = processEscape(fileName);
+                          Path filePath = Paths.get(dir).resolve(fileName);
                           if(Files.exists(filePath) && Files.isReadable(filePath)){
                             try{
                                    Files.lines(filePath).forEach(System.out::print);
@@ -166,6 +167,16 @@ public class Main {
         }
 
         return args;
+    }
+
+    private static String processEscape(String input){
+             return input.replace("\\n","\n")
+                         .replace("\t","\t")
+                         .replace("\\40"," ")
+                         .replace("\\x20", " ")
+                         .replace("\\'","'")
+                         .replace("\\\\", "\\");
+
     }
 
     private static String getPath(String parameter) {
