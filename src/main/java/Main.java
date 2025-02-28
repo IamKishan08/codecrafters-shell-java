@@ -12,7 +12,9 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         List<String> builtIn = new ArrayList<>();
-        Collections.addAll(builtIn, "type", "echo", "exit","pwd");
+        Collections.addAll(builtIn, "type", "echo", "exit","pwd","cd");
+
+        String dir = Path.of("").toAbsolutePath().toString();
 
         while (true) {
 
@@ -42,9 +44,17 @@ public class Main {
                     break;
                 
                 case "pwd":
-                    System.out.println(System.getProperty("user.dir"));
+                    //System.out.println(System.getProperty("user.dir"));
+                    System.out.println(dir);
                     break;    
-                 
+                case "cd":
+                    if(Files.isDirectory(Path.of(parameter) )){
+                        dir = parameter;
+                    }else{
+                        System.out.println("cd: "+ parameter + ": No such file or directory");
+                    }
+                    break;
+                     
                 case "type":
                     if (parameter.isEmpty()) {
                         System.out.println("type: missing argument");
