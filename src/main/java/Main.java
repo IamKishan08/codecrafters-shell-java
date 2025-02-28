@@ -100,7 +100,7 @@ public class Main {
                           Path filePath = Paths.get(dir).resolve(fileName);
                           if(Files.exists(filePath) && Files.isReadable(filePath)){
                             try{
-                                   Files.lines(filePath).forEach(System.out::println);
+                                   Files.lines(filePath).forEach(System.out::print);
                             }catch(IOException e){
                                 System.out.println("cat: "+fileName+ ": read error");
                             }
