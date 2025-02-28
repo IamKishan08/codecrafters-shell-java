@@ -12,7 +12,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         List<String> builtIn = new ArrayList<>();
-        Collections.addAll(builtIn, "type", "echo", "exit");
+        Collections.addAll(builtIn, "type", "echo", "exit","pwd");
 
         while (true) {
 
@@ -40,7 +40,11 @@ public class Main {
                 case "echo":
                     System.out.println(parameter);
                     break;
-
+                
+                case "pwd":
+                    System.out.println(System.getProperty("user.dir"));
+                    break;    
+                 
                 case "type":
                     if (parameter.isEmpty()) {
                         System.out.println("type: missing argument");
