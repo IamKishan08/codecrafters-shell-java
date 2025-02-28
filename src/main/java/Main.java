@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 public class Main {
+    private static boolean inSingleQuotes;
+
     public static void main(String[] args) throws Exception {
 
         Scanner scanner = new Scanner(System.in);
@@ -137,13 +139,15 @@ public class Main {
     private static List<String> parseArgument(String input) {
 
         List<String> args = new ArrayList<>();
-        boolean inQuotes = false;
+        boolean inSingleQuotes = false , inDoubleQuotes = false;
         StringBuilder currentArg = new StringBuilder();
 
         for (char c : input.toCharArray()) {
-            if (c == '\'') {
-                inQuotes = !inQuotes;
-            } else if (c == ' ' && !inQuotes) {
+            if (c == '\'' && !inDoubleQuotes) {
+                inSingleQuotes = !inSingleQuotes;
+            }else if(c == '"' && !inSingleQuotes){
+                 inDoubleQuotes = !inDoubleQuotes;
+            } else if (c == ' ' && !inSingleQuotes && !inDoubleQuotes) {
                 if (currentArg.length() > 0) {
                     args.add(currentArg.toString());
                     currentArg.setLength(0);
