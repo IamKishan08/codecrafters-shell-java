@@ -4,12 +4,11 @@ import java.util.List;
 import java.util.Scanner;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-//import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
 public class Main {
-   
+    
 
     public static void main(String[] args) throws Exception {
 
@@ -99,8 +98,7 @@ public class Main {
                     }
                      
                     for(String fileName : parameter){
-                          fileName = processEscapes(fileName);
-                          Path filePath = Paths.get(dir);
+                          Path filePath = Paths.get(dir).resolve(fileName);
                           if(Files.exists(filePath) && Files.isReadable(filePath)){
                             try{
                                    Files.lines(filePath).forEach(System.out::print);
@@ -145,9 +143,12 @@ public class Main {
 
         for (int i=0;i<input.length();i++) {
             char c = input.charAt(i);
-            if(c == '\\' && i+1 <input.length()){
-                  currentArg.append(resolveEscape(input.charAt(++i)));
-            }
+             if(c == '\\'){
+                 i++;
+                 if(i<input.length()){
+                    currentArg.append(input.charAt(i));
+                 }
+             }
             else if (c == '\'' && !inDoubleQuotes) {
                 inSingleQuotes = !inSingleQuotes;
             }else if(c == '"' && !inSingleQuotes){
@@ -167,29 +168,6 @@ public class Main {
         }
 
         return args;
-    }
-
-    private static String resolveEscape(char c) {
-        return switch (c) {
-            case 'n' -> "\n";
-            case 't' -> "\t";
-            case 40, 0x20 -> " ";
-            case '\'' -> "'";
-            case '\\' -> "\\";
-            case '"' -> "\"";
-            case '?' -> "?";
-            default -> String.valueOf(c);
-        };
-    }
-
-    private static String processEscapes(String input) {
-        return input.replace("\\n", "\n")
-                    .replace("\\t", "\t")
-                    .replace("\\40", " ")
-                    .replace("\\x20", " ")
-                    .replace("\\'", "'")
-                    .replace("\\\\", "\\")
-                    .replace("\\?", "?");
     }
 
     private static String getPath(String parameter) {
