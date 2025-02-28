@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 public class Main {
-    private static boolean inSingleQuotes;
+   
 
     public static void main(String[] args) throws Exception {
 
@@ -99,7 +99,7 @@ public class Main {
                     }
                      
                     for(String fileName : parameter){
-                          Path filePath = Paths.get(dir).resolve(fileName);
+                          Path filePath = Paths.get(dir).resolve(fileName.replace("\\","\\\\"));
                           if(Files.exists(filePath) && Files.isReadable(filePath)){
                             try{
                                    Files.lines(filePath).forEach(System.out::print);
@@ -142,8 +142,12 @@ public class Main {
         boolean inSingleQuotes = false , inDoubleQuotes = false;
         StringBuilder currentArg = new StringBuilder();
 
-        for (char c : input.toCharArray()) {
-            if (c == '\'' && !inDoubleQuotes) {
+        for (int i=0;i<input.length();i++) {
+            char c = input.charAt(i);
+            if(c == '\\' && i+1 <input.length()){
+                  currentArg.append(input.charAt(++i));
+            }
+            else if (c == '\'' && !inDoubleQuotes) {
                 inSingleQuotes = !inSingleQuotes;
             }else if(c == '"' && !inSingleQuotes){
                  inDoubleQuotes = !inDoubleQuotes;
