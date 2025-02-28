@@ -13,7 +13,7 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
         List<String> builtIn = new ArrayList<>();
-        Collections.addAll(builtIn, "type", "echo", "exit", "pwd", "cd", "cat");
+        Collections.addAll(builtIn, "type", "echo", "exit", "pwd", "cd");
         String dir = Path.of("").toAbsolutePath().toString();
 
         while (true) {
