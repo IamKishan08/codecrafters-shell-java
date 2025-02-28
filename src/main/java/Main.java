@@ -3,6 +3,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.io.IOException;
 import java.nio.file.Files;
 
@@ -15,6 +16,8 @@ public class Main {
         Collections.addAll(builtIn, "type", "echo", "exit","pwd","cd");
 
         String dir = Path.of("").toAbsolutePath().toString();
+        
+       
 
         while (true) {
 
@@ -48,8 +51,10 @@ public class Main {
                     System.out.println(dir);
                     break;    
                 case "cd":
-                    if(Files.isDirectory(Path.of(parameter) )){
-                        dir = parameter;
+                    Path newPath = Paths.get(dir).resolve(parameter).normalize();
+
+                    if(Files.isDirectory(newPath )){
+                        dir = newPath.toAbsolutePath().toString();
                     }else{
                         System.out.println("cd: "+ parameter + ": No such file or directory");
                     }
