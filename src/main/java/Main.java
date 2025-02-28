@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+//import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
@@ -11,30 +12,29 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         Scanner scanner = new Scanner(System.in);
-
         List<String> builtIn = new ArrayList<>();
-        Collections.addAll(builtIn, "type", "echo", "exit","pwd","cd");
-
+        Collections.addAll(builtIn, "type", "echo", "exit", "pwd", "cd", "cat");
         String dir = Path.of("").toAbsolutePath().toString();
-        
-       
 
         while (true) {
-
             System.out.print("$ ");
             String input = scanner.nextLine().trim();
 
-            if (input.isEmpty()) {
+            if (input.isEmpty())
                 continue;
-            }
 
-            String[] parts = input.split("\\s+", 2);
-            String command = parts[0];
-            String parameter = parts.length > 1 ? parts[1] : "";
+            List<String> parts = parseArgument(input);
+
+            if (parts.isEmpty())
+                continue;
+
+            // String[] parts = input.split("\s+", 2);
+            String command = parts.get(0);
+            List<String> parameter = parts.subList(1, parts.size());
 
             switch (command) {
                 case "exit":
-                    if (parameter.equals("0")) {
+                    if (parameter.size() == 1 && parameter.get(0).equals("0")) {
                         scanner.close();
                         System.exit(0);
                     } else {
@@ -43,70 +43,121 @@ public class Main {
                     break;
 
                 case "echo":
-                    System.out.println(parameter);
+
+                    System.out.println(String.join(" ", parameter));
                     break;
-                
+
                 case "pwd":
-                    //System.out.println(System.getProperty("user.dir"));
+
                     System.out.println(dir);
-                    break;    
+                    break;
                 case "cd":
 
-                    if(parameter.equals("~")){
-                        parameter = parameter.replace("~",System.getenv("HOME"));
+                    if (parameter.isEmpty()) {
+                        System.out.println("cd: missing arguments");
+                        break;
                     }
-                    Path newPath = Paths.get(dir).resolve(parameter).normalize();
+                    String targetDir = parameter.get(0).equals("~") ? System.getenv("HOME") : parameter.get(0);
+                    Path newPath = Paths.get(dir).resolve(targetDir).normalize();
 
-                    if(Files.isDirectory(newPath )){
+                    if (Files.isDirectory(newPath)) {
                         dir = newPath.toAbsolutePath().toString();
-                    }else{
-                        System.out.println("cd: "+ parameter + ": No such file or directory");
+                    } else {
+                        System.out.println("cd: " + parameter + ": No such file or directory");
                     }
                     break;
-                     
+
                 case "type":
                     if (parameter.isEmpty()) {
                         System.out.println("type: missing argument");
                         break;
                     }
 
-                    // Check if it is builtIn
-                    if (builtIn.contains(parameter)) {
-                        System.out.println(parameter + " is a shell builtin");
-                        break;
-                    }
+                    for (String param : parameter) {
+                        // Check if it is builtIn
+                        if (builtIn.contains(param)) {
+                            System.out.println(param + " is a shell builtin");
+                            break;
+                        }
 
-                    // Search Path
-                    String path = getPath(parameter);
-                    if (path != null) {
-                        System.out.println(parameter + " is " + path);
-                    } else {
-                        System.out.println(parameter + ": not found");
+                        // Search Path
+                        String path = getPath(param);
+                        if (path != null) {
+                            System.out.println(param + " is " + path);
+                        } else {
+                            System.out.println(param + ": not found");
+                        }
                     }
                     break;
 
+                case "cat":
+
+                    if (parameter.isEmpty()) {
+                        System.out.println("cat : missing file operand");
+                    }
+                     
+                    for(String fileName : parameter){
+                          Path filePath = Paths.get(dir).resolve(fileName);
+                          if(Files.exists(filePath) && Files.isReadable(filePath)){
+                            try{
+                                   Files.lines(filePath).forEach(System.out::println);
+                            }catch(IOException e){
+                                System.out.println("cat: "+fileName+ ": read error");
+                            }
+                          }else{
+                            System.out.println("cat: "+fileName+ ": No such file or cannot read");
+                          }
+                    }
+
+                    break;
+
                 default:
-                     String execPath = getPath(command);
-                    if(execPath != null){
+                    String execPath = getPath(command);
+                    if (execPath != null) {
                         try {
-                                String[] fullcommand = new String[] {command, parameter};
-                                
-                                Process process = Runtime.getRuntime().exec(fullcommand);
-                                process.getInputStream().transferTo(System.out);
-                                process.waitFor();
+                            String[] fullcommand = new String[] { command, parameter.get(0) };
+
+                            Process process = Runtime.getRuntime().exec(fullcommand);
+                            process.getInputStream().transferTo(System.out);
+                            process.waitFor();
 
                         } catch (IOException | InterruptedException e) {
-                            System.out.println(command + ": execution failed: " +e.getMessage() );
+                            System.out.println(command + ": execution failed: " + e.getMessage());
                         }
-                    }
-                    else{
+                    } else {
                         System.out.println(input + ": command not found");
-                   }
-                   break;
+                    }
+                    break;
 
             }
 
         }
+    }
+
+    private static List<String> parseArgument(String input) {
+
+        List<String> args = new ArrayList<>();
+        boolean inQuotes = false;
+        StringBuilder currentArg = new StringBuilder();
+
+        for (char c : input.toCharArray()) {
+            if (c == '\'') {
+                inQuotes = !inQuotes;
+            } else if (c == ' ' && !inQuotes) {
+                if (currentArg.length() > 0) {
+                    args.add(currentArg.toString());
+                    currentArg.setLength(0);
+                }
+            } else {
+                currentArg.append(c);
+            }
+        }
+
+        if (currentArg.length() > 0) {
+            args.add(currentArg.toString());
+        }
+
+        return args;
     }
 
     private static String getPath(String parameter) {
