@@ -63,7 +63,7 @@ public class Main {
                     if (Files.isDirectory(newPath)) {
                         dir = newPath.toAbsolutePath().toString();
                     } else {
-                        System.out.println("cd: " + parameter + ": No such file or directory");
+                        System.out.println("cd: " + parameter.get(0) + ": No such file or directory");
                     }
                     break;
 
