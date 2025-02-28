@@ -107,7 +107,7 @@ public class Main {
                           }else{
                             System.out.println("cat: "+fileName+ ": No such file or cannot read");
                           }
-                    }
+                    } System.out.println();
 
                     break;
 
